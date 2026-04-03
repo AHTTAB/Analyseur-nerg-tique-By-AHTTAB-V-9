@@ -1,0 +1,48 @@
+{
+  "name": "analyseur-energetique",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Analyseur de compteurs Clou, Elster et PRN",
+  "author": "AHTTAB",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "lint": "tsc --noEmit",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "dist": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4"
+  },
+  "build": {
+    "appId": "com.ahttab.analyseur",
+    "productName": "Analyseur Energetique",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    }
+  }
+}
