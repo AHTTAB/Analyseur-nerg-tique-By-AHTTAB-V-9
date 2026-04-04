@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { ArrowLeft, Upload, AlertCircle, Zap, TrendingUp, Clock, Calendar, Plus, Minus, Files, Printer } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { useAuth } from '../context/AuthContext';
 import { ViewState, AnalysisResult } from '../types';
 import { processActarisFiles } from '../utils/excelParser';
+import { exportToExcel } from '../utils/excelExporter';
 
 interface ActarisAnalysisProps {
   onNavigate: (view: ViewState) => void;
 }
 
 export const ActarisAnalysis: React.FC<ActarisAnalysisProps> = ({ onNavigate }) => {
+  const { user, updateUser, saveAnalysis } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
@@ -34,6 +37,28 @@ export const ActarisAnalysis: React.FC<ActarisAnalysisProps> = ({ onNavigate }) 
     try {
       const data = await processActarisFiles(files);
       setResults(data);
+      
+      // Add files to user profile
+      if (user) {
+        const newFiles = files.map(f => f.name);
+        const currentFiles = user.filesAnalyzed || [];
+        updateUser(user.username, {
+          ...user,
+          filesAnalyzed: [...new Set([...currentFiles, ...newFiles])]
+        });
+        
+        // Save to archive
+        saveAnalysis(user.username, data, newFiles);
+        
+        // Export to Excel
+        exportToExcel([
+            { Username: user.username, Date: new Date().toLocaleString(), Files: newFiles.join(', ') },
+            ...data.topFiveGlobal.map(row => ({
+                Rang: row.originalIndex,
+                Valeur: row.value
+            }))
+        ], `Analyse_Actaris_${user.username}_${new Date().getTime()}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur inconnue est survenue");
     } finally {

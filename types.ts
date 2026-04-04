@@ -1,4 +1,14 @@
-export type ViewState = 'HOME' | 'EXCEL_MENU' | 'CLOU_ANALYSIS' | 'ELSTER_ANALYSIS' | 'ACTARIS_ANALYSIS' | 'PRN_ANALYSIS';
+export type ViewState = 'HOME' | 'EXCEL_MENU' | 'CLOU_ANALYSIS' | 'ELSTER_ANALYSIS' | 'ACTARIS_ANALYSIS' | 'PRN_ANALYSIS' | 'LOGIN' | 'SETTINGS';
+
+export type UserRole = 'ADMIN' | 'USER';
+
+export interface User {
+  username: string;
+  password?: string; // For prototype
+  role: UserRole;
+  isOnline?: boolean;
+  filesAnalyzed?: string[];
+}
 
 export interface DataRow {
   date: string;

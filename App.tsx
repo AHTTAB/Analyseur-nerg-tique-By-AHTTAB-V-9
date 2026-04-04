@@ -6,10 +6,15 @@ import { ClouAnalysis } from './views/ClouAnalysis';
 import { PrnAnalysis } from './views/PrnAnalysis';
 import { ElsterAnalysis } from './views/ElsterAnalysis';
 import { ActarisAnalysis } from './views/ActarisAnalysis';
+import { Login } from './views/Login';
+import { Settings } from './views/Settings';
 import { ViewState } from './types';
-import { FileText } from 'lucide-react';
+import { FileText, Settings as SettingsIcon, LogOut } from 'lucide-react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { Button } from './components/Button';
 
 const OneeLogo = () => {
+  // ... (keep existing OneeLogo)
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -48,8 +53,21 @@ const OneeLogo = () => {
   );
 };
 
-function App() {
-  const [currentView, setCurrentView] = useState<ViewState>('HOME');
+function AppContent() {
+  const [currentView, setCurrentView] = useState<ViewState>('LOGIN');
+  const { user, logout } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      setCurrentView('HOME');
+    } else {
+      setCurrentView('LOGIN');
+    }
+  }, [user]);
+
+  if (currentView === 'LOGIN') {
+    return <Login onLoginSuccess={() => setCurrentView('HOME')} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -70,10 +88,14 @@ function App() {
                 <span className="text-sm text-slate-500 font-medium">By AHTTAB</span>
               </div>
             </div>
-            <div className="flex items-center justify-center md:justify-end w-full md:flex-1 md:ml-4 h-24 md:h-full py-0 md:py-2">
+            <div className="flex items-center justify-center md:justify-end w-full md:flex-1 md:ml-4 h-24 md:h-full py-0 md:py-2 gap-2">
                 <div className="h-full w-full max-w-[650px] flex items-center justify-center md:justify-end">
                    <OneeLogo />
                 </div>
+                {user && (
+                  <Button variant="outline" onClick={() => setCurrentView('SETTINGS')}><SettingsIcon className="w-5 h-5" /></Button>
+                )}
+                <Button variant="ghost" onClick={logout}><LogOut className="w-5 h-5" /></Button>
             </div>
           </div>
         </div>
@@ -86,6 +108,7 @@ function App() {
         {currentView === 'ELSTER_ANALYSIS' && <ElsterAnalysis onNavigate={setCurrentView} />}
         {currentView === 'ACTARIS_ANALYSIS' && <ActarisAnalysis onNavigate={setCurrentView} />}
         {currentView === 'PRN_ANALYSIS' && <PrnAnalysis onNavigate={setCurrentView} />}
+        {currentView === 'SETTINGS' && <Settings onNavigate={setCurrentView} />}
       </main>
       
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto print:border-t-0">
@@ -95,6 +118,14 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
