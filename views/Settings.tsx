@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { Settings as SettingsIcon, ArrowLeft, Download } from 'lucide-react';
+import { Settings as SettingsIcon, ArrowLeft, Trash2 } from 'lucide-react';
 import { ViewState, User } from '../types';
-import { exportToExcel } from '../utils/excelExporter';
 
 export const Settings: React.FC<{ onNavigate: (view: ViewState) => void }> = ({ onNavigate }) => {
-  const { user, users, archive, addUser, updateUser } = useAuth();
+  const { user, users, addUser, updateUser, deleteUser } = useAuth();
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [newUsername, setNewUsername] = useState('');
@@ -26,10 +25,6 @@ export const Settings: React.FC<{ onNavigate: (view: ViewState) => void }> = ({ 
       updateUser(username, editingUser);
       setEditingUser(null);
     }
-  };
-
-  const handleExportArchive = () => {
-    exportToExcel(archive, 'Archive_Analyses');
   };
 
   return (
@@ -53,7 +48,10 @@ export const Settings: React.FC<{ onNavigate: (view: ViewState) => void }> = ({ 
                   ) : (
                     <>
                       <span>{u.username} ({u.role})</span>
-                      <Button variant="outline" className="text-sm" onClick={() => setEditingUser(u)}>Modifier</Button>
+                      <div className="flex gap-2">
+                        <Button variant="outline" className="text-sm" onClick={() => setEditingUser(u)}>Modifier</Button>
+                        <Button variant="ghost" className="text-sm text-red-600" onClick={() => deleteUser(u.username)}><Trash2 className="w-4 h-4" /></Button>
+                      </div>
                     </>
                   )}
                 </div>
@@ -66,10 +64,7 @@ export const Settings: React.FC<{ onNavigate: (view: ViewState) => void }> = ({ 
             </div>
           </Card>
 
-          <Card title="Archive de connexion" className="relative">
-            <Button onClick={handleExportArchive} className="absolute top-4 right-4 gap-2">
-                <Download className="w-4 h-4" /> Exporter Excel
-            </Button>
+          <Card title="Archive de connexion">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead>

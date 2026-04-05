@@ -1,52 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, AnalysisResult } from '../types';
-
-interface AnalysisRecord {
-  username: string;
-  date: string;
-  result: AnalysisResult;
-  files: string[];
-}
+import { User } from '../types';
+import { logDataToSheet, getUsers, deleteUser as deleteUserFromSheet } from '../src/services/googleSheetService';
 
 interface AuthContextType {
   user: User | null;
   users: User[];
-  archive: AnalysisRecord[];
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   addUser: (newUser: User) => void;
   updateUser: (username: string, updatedUser: User) => void;
-  saveAnalysis: (username: string, result: AnalysisResult, files: string[]) => void;
+  deleteUser: (username: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem('users');
-    return saved ? JSON.parse(saved) : [
-      { username: '1', password: '1', role: 'ADMIN', isOnline: true },
-      { username: 'user1', password: '123', role: 'USER', isOnline: false }
-    ];
-  });
-  const [archive, setArchive] = useState<AnalysisRecord[]>(() => {
-    const saved = localStorage.getItem('archive');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(users));
-  }, [users]);
+    const loadUsers = async () => {
+      const fetchedUsers = await getUsers();
+      setUsers(fetchedUsers);
+    };
+    loadUsers();
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem('archive', JSON.stringify(archive));
-  }, [archive]);
-
-  const login = (username: string, password: string) => {
+  const login = async (username: string, password: string) => {
     const foundUser = users.find(u => u.username === username && u.password === password);
     if (foundUser) {
       setUser(foundUser);
+      logDataToSheet({
+        type: 'LOGIN',
+        username,
+        timestamp: new Date().toISOString(),
+      });
       return true;
     }
     return false;
@@ -65,18 +53,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const saveAnalysis = (username: string, result: AnalysisResult, files: string[]) => {
-    const newRecord: AnalysisRecord = {
-      username,
-      date: new Date().toLocaleString(),
-      result,
-      files
-    };
-    setArchive([...archive, newRecord]);
+  const deleteUser = async (username: string) => {
+    await deleteUserFromSheet(username);
+    setUsers(users.filter(u => u.username !== username));
   };
 
   return (
-    <AuthContext.Provider value={{ user, users, archive, login, logout, addUser, updateUser, saveAnalysis }}>
+    <AuthContext.Provider value={{ user, users, login, logout, addUser, updateUser, deleteUser }}>
       {children}
     </AuthContext.Provider>
   );

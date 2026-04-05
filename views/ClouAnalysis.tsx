@@ -5,7 +5,6 @@ import { Card } from '../components/Card';
 import { useAuth } from '../context/AuthContext';
 import { ViewState, AnalysisResult } from '../types';
 import { processClouFiles } from '../utils/excelParser';
-import { exportToExcel } from '../utils/excelExporter';
 
 interface ClouAnalysisProps {
   onNavigate: (view: ViewState) => void;
@@ -48,16 +47,7 @@ export const ClouAnalysis: React.FC<ClouAnalysisProps> = ({ onNavigate }) => {
         });
         
         // Save to archive
-        saveAnalysis(user.username, data, newFiles);
-        
-        // Export to Excel
-        exportToExcel([
-            { Username: user.username, Date: new Date().toLocaleString(), Files: newFiles.join(', ') },
-            ...data.topFiveGlobal.map(row => ({
-                Rang: row.originalIndex,
-                Valeur: row.value
-            }))
-        ], `Analyse_${user.username}_${new Date().getTime()}`);
+        await saveAnalysis(user.username, data, newFiles);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur inconnue est survenue");

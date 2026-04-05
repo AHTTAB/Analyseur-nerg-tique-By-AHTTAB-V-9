@@ -5,7 +5,6 @@ import { Card } from '../components/Card';
 import { useAuth } from '../context/AuthContext';
 import { ViewState, AnalysisResult } from '../types';
 import { processPrnFiles } from '../utils/excelParser';
-import { exportToExcel } from '../utils/excelExporter';
 
 interface PrnAnalysisProps {
   onNavigate: (view: ViewState) => void;
@@ -48,19 +47,7 @@ export const PrnAnalysis: React.FC<PrnAnalysisProps> = ({ onNavigate }) => {
         });
         
         // Save to archive
-        saveAnalysis(user.username, data, newFiles);
-        
-        // Export to Excel
-        exportToExcel([
-            { Username: user.username, Date: new Date().toLocaleString(), Files: newFiles.join(', ') },
-            ...data.topFiveGlobal.map(row => ({
-                Nom: row.fullRow[0],
-                Date: row.fullRow[1],
-                Heure: row.fullRow[2],
-                Info: row.fullRow[3],
-                P_Active: row.fullRow[4]
-            }))
-        ], `Analyse_PRN_${user.username}_${new Date().getTime()}`);
+        await saveAnalysis(user.username, data, newFiles);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur inconnue est survenue");
