@@ -96,7 +96,7 @@ function AppContent() {
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-semibold text-slate-800">Bienvenue, {user.username}</span>
-                    <Button variant="outline" size="sm" onClick={() => setCurrentView('SETTINGS')} className="ml-2 h-8 w-8 p-0 rounded-full border-slate-300 hover:bg-slate-100"><SettingsIcon className="w-4 h-4 text-slate-600" /></Button>
+                    <Button variant="outline" onClick={() => setCurrentView('SETTINGS')} className="ml-2 h-8 w-8 p-0 rounded-full border-slate-300 hover:bg-slate-100"><SettingsIcon className="w-4 h-4 text-slate-600" /></Button>
                   </div>
                 )}
                 <Button variant="ghost" onClick={logout}><LogOut className="w-5 h-5" /></Button>

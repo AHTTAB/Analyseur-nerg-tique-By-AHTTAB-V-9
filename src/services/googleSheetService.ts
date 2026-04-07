@@ -1,6 +1,6 @@
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxwGoYVS-5C-UnYnpJk4Mi7r-5l2urfXmbXnEhD0WFTjjzbYAHorLEnOy7X6vjKVSKK/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxsw_c28NuIM__rmgL4jkoGmgCBSOrXSP_hOwpW8FsjnZ9Yz5qoCMdr98C1hwFtCcuV6A/exec';
 
-export async function logDataToSheet(data: any) {
+export async function logDataToSheet(sheetName: string, data: any) {
   try {
     await fetch(GOOGLE_SHEET_URL, {
       method: 'POST',
@@ -8,7 +8,7 @@ export async function logDataToSheet(data: any) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ sheetName, data }),
     });
     return { success: true };
   } catch (error) {
