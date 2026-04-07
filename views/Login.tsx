@@ -12,14 +12,22 @@ export const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = isRegistering 
-      ? await register(username, password)
-      : await login(username, password);
-      
-    if (success) {
+    setError('');
+    try {
+      if (isRegistering) {
+        await register(username, password);
+      } else {
+        await login(username, password);
+      }
       onLoginSuccess();
-    } else {
-      setError(isRegistering ? "Erreur lors de l'inscription" : "Nom d'utilisateur ou mot de passe incorrect");
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      let message = "Une erreur est survenue.";
+      if (error.code === 'auth/invalid-email') message = "Format de l'email invalide.";
+      else if (error.code === 'auth/invalid-credential') message = "Email ou mot de passe incorrect.";
+      else if (error.code === 'auth/email-already-in-use') message = "Cet email est déjà utilisé.";
+      else if (error.code === 'auth/weak-password') message = "Le mot de passe doit contenir au moins 6 caractères.";
+      setError(message);
     }
   };
 
