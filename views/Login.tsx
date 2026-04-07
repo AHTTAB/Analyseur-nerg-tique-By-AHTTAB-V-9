@@ -7,14 +7,19 @@ export const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loginWithGoogle } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { login, register, loginWithGoogle } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (await login(username, password)) {
+    const success = isRegistering 
+      ? await register(username, password)
+      : await login(username, password);
+      
+    if (success) {
       onLoginSuccess();
     } else {
-      setError("Nom d'utilisateur ou mot de passe incorrect");
+      setError(isRegistering ? "Erreur lors de l'inscription" : "Nom d'utilisateur ou mot de passe incorrect");
     }
   };
 
@@ -31,7 +36,9 @@ export const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess
           <div className="bg-blue-600 p-3 rounded-xl mb-4">
             <FileText className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-blue-900 text-center">Analyseur Énergétique</h1>
+          <h1 className="text-2xl font-bold text-blue-900 text-center">
+            {isRegistering ? 'Inscription' : 'Analyseur Énergétique'}
+          </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,11 +55,26 @@ export const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess
             onChange={(e) => setPassword(e.target.value)} 
           />
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Connexion</Button>
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">
+            {isRegistering ? 'S\'inscrire' : 'Connexion'}
+          </Button>
         </form>
 
+        <div className="mt-4 text-center">
+          <button 
+            onClick={() => setIsRegistering(!isRegistering)}
+            className="text-blue-700 hover:underline text-sm"
+          >
+            {isRegistering ? 'Déjà un compte ? Connexion' : 'Pas de compte ? S\'inscrire'}
+          </button>
+        </div>
+
         <div className="mt-6 space-y-3">
-          <Button onClick={() => handleSocialLogin('google')} className="w-full bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 py-3 rounded-lg font-bold">
+          <Button 
+            onClick={() => handleSocialLogin('google')} 
+            variant="outline"
+            className="w-full"
+          >
             Connexion avec Google
           </Button>
         </div>

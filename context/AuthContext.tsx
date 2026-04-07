@@ -3,6 +3,7 @@ import { User } from '../types';
 import { auth, db } from '../src/firebase';
 import { 
   signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
   signOut, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
@@ -13,6 +14,7 @@ import { doc, getDoc } from 'firebase/firestore';
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
+  register: (username: string, password: string) => Promise<boolean>;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   users: User[];
@@ -54,6 +56,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const register = async (username: string, password: string) => {
+    try {
+      await createUserWithEmailAndPassword(auth, username, password);
+      return true;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return false;
+    }
+  };
+
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
@@ -65,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider value={{ 
       user, 
       login, 
+      register,
       loginWithGoogle, 
       logout,
       users,
