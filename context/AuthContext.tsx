@@ -47,23 +47,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (username: string, password: string) => {
-    try {
-      await signInWithEmailAndPassword(auth, username, password);
-      return true;
-    } catch (error) {
-      console.error('Login failed:', error);
-      return false;
-    }
+    await signInWithEmailAndPassword(auth, username, password);
+    return true;
   };
 
   const register = async (username: string, password: string) => {
-    try {
-      await createUserWithEmailAndPassword(auth, username, password);
-      return true;
-    } catch (error) {
-      console.error('Registration failed:', error);
-      return false;
-    }
+    await createUserWithEmailAndPassword(auth, username, password);
+    return true;
   };
 
   const loginWithGoogle = async () => {
