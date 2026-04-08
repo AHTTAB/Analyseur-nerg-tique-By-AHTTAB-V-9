@@ -404,27 +404,23 @@ const extractPrnRows = async (file: File): Promise<DataRow[]> => {
     // تقسيم السطر بناءً على المسافات المتعددة
     const parts = line.split(/\s+/);
     
-    // نتوقع على الأقل 6 أجزاء (Name, Date, Time, ID, Value1, Value2)
-    if (parts.length < 6) {
-        if (i < 5) console.log(`Line ${i} has insufficient parts (${parts.length}): ${line}`, parts);
+    // Find the date part (DD/MM/YYYY or DD/MM/YY)
+    const dateIndex = parts.findIndex(p => /\d{2}[-/]\d{2}[-/]\d{2,4}/.test(p));
+    if (dateIndex === -1) {
+        continue;
+    }
+    
+    const rawDate = parts[dateIndex];
+    const rawTime = parts[dateIndex + 1];
+    const rawValue = parts[dateIndex + 2];
+    
+    const value = parseExcelNumber(rawValue);
+    if (value === null) {
         continue;
     }
 
-    // بناءً على التنسيق: NORMAL TR2 01/06/2025 00:10 10 0 0
-    // parts[0] = NORMAL, parts[1] = TR2, parts[2] = 01/06/2025, parts[3] = 00:10, parts[4] = 10, parts[5] = 0, parts[6] = 0
-    // قد يختلف عدد الأجزاء إذا كان الاسم يحتوي مسافات.
-    
-    // محاولة استخراج التاريخ والوقت والقيمة بناءً على التنسيق الملاحظ
-    const rawDate = parts[parts.length - 5];
-    const rawTime = parts[parts.length - 4];
-    const rawValue = parts[parts.length - 3];
-    const rawReactive = parts[parts.length - 2];
-
-    const value = parseExcelNumber(rawValue);
-    if (value === null) continue;
-
     const fullRow: any[] = parts;
-    fullRow[parts.length - 3] = value; // تحديث القيمة
+    fullRow[dateIndex + 2] = value; // تحديث القيمة
 
     // Parse Date (DD/MM/YY or DD/MM/YYYY)
     const dateParts = rawDate.split(/[-/]/);

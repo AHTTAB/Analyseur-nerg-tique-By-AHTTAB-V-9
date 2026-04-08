@@ -50,16 +50,16 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
           </p>
         </button>
       </div>
-
-      <div className="mt-12 text-center">
-        <a 
+      <div className="mt-12 max-w-md mx-auto bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">Télécharger l'application</h3>
+        <a
           href="https://www.mediafire.com/file/on6mzgm0xit8val/Analyseur%20Energetique%20Setup%201.0.0.rar"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg"
+          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors gap-2"
         >
           <Download className="w-5 h-5" />
-          Télécharger l'application
+          Télécharger le Setup
         </a>
       </div>
     </div>
