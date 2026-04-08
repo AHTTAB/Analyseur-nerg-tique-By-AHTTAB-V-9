@@ -54,18 +54,8 @@ const OneeLogo = () => {
 };
 
 function AppContent() {
-  const [currentView, setCurrentView] = useState<ViewState>('LOGIN');
+  const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const { user, logout } = useAuth();
-
-  useEffect(() => {
-    if (!user) {
-      setCurrentView('LOGIN');
-    }
-  }, [user]);
-
-  if (currentView === 'LOGIN') {
-    return <Login onLoginSuccess={() => setCurrentView('HOME')} />;
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -90,16 +80,20 @@ function AppContent() {
                 <div className="h-full w-full max-w-[650px] flex items-center justify-center md:justify-end">
                    <OneeLogo />
                 </div>
-                {user && (
+                {user ? (
                   <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
                     <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-semibold text-slate-800">Bienvenue, {user.username}</span>
                     <Button variant="outline" onClick={() => setCurrentView('SETTINGS')} className="ml-2 h-8 w-8 p-0 rounded-full border-slate-300 hover:bg-slate-100"><SettingsIcon className="w-4 h-4 text-slate-600" /></Button>
+                    <Button variant="ghost" onClick={logout} className="p-2"><LogOut className="w-5 h-5" /></Button>
                   </div>
+                ) : (
+                  <Button variant="outline" onClick={() => setCurrentView('LOGIN')} className="rounded-full px-6">
+                    Connexion
+                  </Button>
                 )}
-                <Button variant="ghost" onClick={logout}><LogOut className="w-5 h-5" /></Button>
             </div>
           </div>
         </div>
@@ -113,6 +107,7 @@ function AppContent() {
         {currentView === 'ACTARIS_ANALYSIS' && <ActarisAnalysis onNavigate={setCurrentView} />}
         {currentView === 'PRN_ANALYSIS' && <PrnAnalysis onNavigate={setCurrentView} />}
         {currentView === 'SETTINGS' && <Settings onNavigate={setCurrentView} />}
+        {currentView === 'LOGIN' && <Login onLoginSuccess={() => setCurrentView('HOME')} />}
       </main>
       
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto print:border-t-0">
