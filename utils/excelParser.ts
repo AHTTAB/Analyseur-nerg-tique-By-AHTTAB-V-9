@@ -394,33 +394,34 @@ export const processActarisFiles = async (files: File[]): Promise<AnalysisResult
 const extractPrnRows = async (file: File): Promise<DataRow[]> => {
   const text = await file.text();
   const lines = text.split(/\r?\n/);
-  console.log(`Processing PRN file: ${file.name}, total lines: ${lines.length}`);
   const processedRows: DataRow[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
     
-    // تقسيم السطر بناءً على المسافات المتعددة
-    const parts = line.split(/\s+/);
-    
-    // Find the date part (DD/MM/YYYY or DD/MM/YY)
-    const dateIndex = parts.findIndex(p => /\d{2}[-/]\d{2}[-/]\d{2,4}/.test(p));
-    if (dateIndex === -1) {
-        continue;
-    }
-    
-    const rawDate = parts[dateIndex];
-    const rawTime = parts[dateIndex + 1];
-    const rawValue = parts[dateIndex + 2];
-    
-    const value = parseExcelNumber(rawValue);
-    if (value === null) {
-        continue;
-    }
+    // Regex: "Name" "Date" "Time" ID Value1 Value2
+    const regex = /^"([^"]+)"\s+"([^"]+)"\s+"([^"]+)"\s+(\S+)\s+(\S+)\s+(\S+).*$/;
+    const match = line.match(regex);
 
-    const fullRow: any[] = parts;
-    fullRow[dateIndex + 2] = value; // تحديث القيمة
+    if (!match) continue;
+
+    const rawName = match[1];
+    const rawDate = match[2];
+    const rawTime = match[3];
+    const rawId = match[4];
+    const rawValue = match[5]; // Index 4 (5th captured group)
+    const rawReactive = match[6];
+
+    const fullRow: any[] = [rawName, rawDate, rawTime, rawId, rawValue, rawReactive];
+
+    const value = parseExcelNumber(rawValue);
+    if (value === null) continue;
+
+    fullRow[4] = value;
+    
+    const reactiveVal = parseExcelNumber(rawReactive);
+    if (reactiveVal !== null) fullRow[5] = reactiveVal;
 
     // Parse Date (DD/MM/YY or DD/MM/YYYY)
     const dateParts = rawDate.split(/[-/]/);

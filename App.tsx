@@ -8,10 +8,8 @@ import { ElsterAnalysis } from './views/ElsterAnalysis';
 import { ActarisAnalysis } from './views/ActarisAnalysis';
 import { ViewState } from './types';
 import { FileText } from 'lucide-react';
-import { Button } from './components/Button';
 
 const OneeLogo = () => {
-  // ... (keep existing OneeLogo)
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -50,7 +48,7 @@ const OneeLogo = () => {
   );
 };
 
-function AppContent() {
+function App() {
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
 
   return (
@@ -72,7 +70,7 @@ function AppContent() {
                 <span className="text-sm text-slate-500 font-medium">By AHTTAB</span>
               </div>
             </div>
-            <div className="flex items-center justify-center md:justify-end w-full md:flex-1 md:ml-4 h-24 md:h-full py-0 md:py-2 gap-2">
+            <div className="flex items-center justify-center md:justify-end w-full md:flex-1 md:ml-4 h-24 md:h-full py-0 md:py-2">
                 <div className="h-full w-full max-w-[650px] flex items-center justify-center md:justify-end">
                    <OneeLogo />
                 </div>
@@ -97,12 +95,6 @@ function AppContent() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function App() {
-  return (
-    <AppContent />
   );
 }
 
