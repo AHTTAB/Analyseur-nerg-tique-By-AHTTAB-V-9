@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download } from 'lucide-react';
 import { Button } from '../components/Button';
 import { ViewState } from '../types';
 
@@ -49,6 +49,18 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             Traitement et analyse des fichiers textes formatés PRN pour les rapports techniques.
           </p>
         </button>
+      </div>
+
+      <div className="mt-12 text-center">
+        <a 
+          href="https://www.mediafire.com/file/on6mzgm0xit8val/Analyseur%20Energetique%20Setup%201.0.0.rar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg"
+        >
+          <Download className="w-5 h-5" />
+          Télécharger l'application
+        </a>
       </div>
     </div>
   );
