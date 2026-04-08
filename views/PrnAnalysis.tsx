@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ArrowLeft, Upload, AlertCircle, FileText, TrendingUp, Clock, Calendar, Plus, Minus, Files, Printer } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { useAuth } from '../context/AuthContext';
 import { ViewState, AnalysisResult } from '../types';
 import { processPrnFiles } from '../utils/excelParser';
 
@@ -11,7 +10,6 @@ interface PrnAnalysisProps {
 }
 
 export const PrnAnalysis: React.FC<PrnAnalysisProps> = ({ onNavigate }) => {
-  const { user, updateUser, saveAnalysis } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
@@ -36,19 +34,6 @@ export const PrnAnalysis: React.FC<PrnAnalysisProps> = ({ onNavigate }) => {
     try {
       const data = await processPrnFiles(files);
       setResults(data);
-      
-      // Add files to user profile
-      if (user) {
-        const newFiles = files.map(f => f.name);
-        const currentFiles = user.filesAnalyzed || [];
-        updateUser(user.username, {
-          ...user,
-          filesAnalyzed: [...new Set([...currentFiles, ...newFiles])]
-        });
-        
-        // Save to archive
-        await saveAnalysis(user.username, data, newFiles);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur inconnue est survenue");
     } finally {
